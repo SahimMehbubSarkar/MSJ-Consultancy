@@ -15,38 +15,22 @@ import {
   UserCheck,
 } from "lucide-react";
 
-export default function HeroSection({ onSelectTab }) {
+export default function HeroSection({ onOpenForm }) {
   const [showSticky, setShowSticky] = React.useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      const formsElem = document.getElementById("forms-section");
-      if (scrollY > 380) {
-        if (formsElem) {
-          const formsTop = formsElem.offsetTop;
-          if (scrollY >= formsTop - 250) {
-            setShowSticky(false);
-            return;
-          }
-        }
-        setShowSticky(true);
-      } else {
-        setShowSticky(false);
-      }
+      setShowSticky(scrollY > 380);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleScrollToForm = (tabType) => {
-    if (onSelectTab) {
-      onSelectTab(tabType);
-    }
-    const section = document.getElementById("forms-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
+  const handleOpenForm = (tabType) => {
+    if (onOpenForm) {
+      onOpenForm(tabType);
     }
   };
 
@@ -92,7 +76,7 @@ export default function HeroSection({ onSelectTab }) {
                   type="button"
                   className="msj-vip-pass-card hospital-pass"
                   id="hero-hospital-consult-btn"
-                  onClick={() => handleScrollToForm("hospital")}
+                  onClick={() => handleOpenForm("hospital")}
                 >
                   <div className="msj-pass-shimmer" />
 
@@ -137,7 +121,7 @@ export default function HeroSection({ onSelectTab }) {
                   type="button"
                   className="msj-vip-pass-card admission-pass"
                   id="hero-apply-admission-btn"
-                  onClick={() => handleScrollToForm("admission")}
+                  onClick={() => handleOpenForm("admission")}
                 >
                   <div className="msj-pass-shimmer" />
 
@@ -183,7 +167,7 @@ export default function HeroSection({ onSelectTab }) {
           {/* Right Column: Floating Glassmorphic Badges over the full image */}
           <div className="msj-hero-right-floats">
             {/* Float 1: Nursing Admissions */}
-            <div className="msj-glass-floating-card top" onClick={() => handleScrollToForm("admission")}>
+            <div className="msj-glass-floating-card top" onClick={() => handleOpenForm("admission")}>
               <div className="msj-glass-icon-gold">
                 <Stethoscope size={22} />
               </div>
@@ -195,7 +179,7 @@ export default function HeroSection({ onSelectTab }) {
             </div>
 
             {/* Float 2: Hospital Affiliations */}
-            <div className="msj-glass-floating-card mid" onClick={() => handleScrollToForm("hospital")}>
+            <div className="msj-glass-floating-card mid" onClick={() => handleOpenForm("hospital")}>
               <div className="msj-glass-icon-navy">
                 <Building2 size={22} />
               </div>
@@ -239,7 +223,7 @@ export default function HeroSection({ onSelectTab }) {
         <button
           type="button"
           className="msj-sticky-apply-btn"
-          onClick={() => handleScrollToForm("admission")}
+          onClick={() => handleOpenForm("admission")}
         >
           <div className="msj-sticky-btn-left">
             <span className="msj-sticky-live-dot" />

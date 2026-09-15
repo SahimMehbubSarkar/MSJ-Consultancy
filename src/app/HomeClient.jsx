@@ -5,13 +5,13 @@ import Navbar from "@/components/home/Navbar";
 import HeroSection from "@/components/home/HeroSection";
 import PartnersMarquee from "@/components/home/PartnersMarquee";
 import MetricsMarquee from "@/components/home/MetricsMarquee";
-import TabbedFormsSection from "@/components/home/TabbedFormsSection";
+import FormModal from "@/components/home/FormModal";
 import Footer from "@/components/home/Footer";
 import "./homepage.css";
 
 export default function HomeClient({ initialSettings }) {
   const [settings, setSettings] = useState(initialSettings || null);
-  const [activeTab, setActiveTab] = useState("hospital"); // "admission" | "hospital"
+  const [activeForm, setActiveForm] = useState(null); // 'hospital' | 'admission' | null
 
   useEffect(() => {
     // Fetch live site settings from public endpoint if not present or to refresh
@@ -52,7 +52,7 @@ export default function HomeClient({ initialSettings }) {
       <Navbar siteName={settings?.siteName} siteIconUrl={settings?.siteIconUrl} />
 
       {/* Hero Section */}
-      <HeroSection onSelectTab={(tab) => setActiveTab(tab)} />
+      <HeroSection onOpenForm={(type) => setActiveForm(type)} />
 
       {/* Our Partners Infinite Marquee */}
       <PartnersMarquee />
@@ -60,8 +60,8 @@ export default function HomeClient({ initialSettings }) {
       {/* Full-Screen Smooth Metrics Strip */}
       <MetricsMarquee />
 
-      {/* Dual Tabbed Application Forms Section */}
-      <TabbedFormsSection activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* Form Modal opened from hero cards */}
+      <FormModal formType={activeForm} onClose={() => setActiveForm(null)} />
 
       {/* Footer with dynamic site settings */}
       <Footer settings={settings} />

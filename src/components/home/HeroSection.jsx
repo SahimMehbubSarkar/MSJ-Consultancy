@@ -87,52 +87,7 @@ export default function HeroSection({ onSelectTab }) {
             {/* Interactive CTA Buttons - Plan 3: Dual VIP Application Pass Cards */}
             <div className="msj-hero-cta-group">
               <div className="msj-vip-pass-row">
-                {/* Pass 1: Student Admission Gateway Pass */}
-                <button
-                  type="button"
-                  className="msj-vip-pass-card admission-pass"
-                  id="hero-apply-admission-btn"
-                  onClick={() => handleScrollToForm("admission")}
-                >
-                  <div className="msj-pass-shimmer" />
-
-                  {/* Pass Header Stripe */}
-                  <div className="msj-pass-header">
-                    <div className="msj-pass-status-pill green">
-                      <span className="msj-pass-live-dot green" />
-                      <span>INTAKE 2026-27 ACTIVE</span>
-                    </div>
-                    <div className="msj-pass-badge gold">
-                      <Sparkles size={11} style={{ marginRight: 3 }} />
-                      <span>OFFICIAL GATEWAY</span>
-                    </div>
-                  </div>
-
-                  {/* Pass Body Content */}
-                  <div className="msj-pass-body">
-                    <div className="msj-pass-icon-box gold">
-                      <GraduationCap size={22} />
-                    </div>
-                    <div className="msj-pass-info">
-                      <div className="msj-pass-title">
-                        Student Admission Form
-                      </div>
-                      <div className="msj-pass-sub">
-                        ⚡ Fast-Track Application • 2 Min Easy Process
-                      </div>
-                    </div>
-
-                    {/* Perforated Stub / Action Trigger */}
-                    <div className="msj-pass-stub">
-                      <div className="msj-pass-stub-line" />
-                      <div className="msj-pass-action-circle gold">
-                        <ArrowRight size={17} className="msj-pass-arrow" />
-                      </div>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Pass 2: Overseas Hospital Gateway Pass */}
+                {/* Pass 1: Overseas Hospital Gateway Pass */}
                 <button
                   type="button"
                   className="msj-vip-pass-card hospital-pass"
@@ -171,6 +126,51 @@ export default function HeroSection({ onSelectTab }) {
                     <div className="msj-pass-stub">
                       <div className="msj-pass-stub-line" />
                       <div className="msj-pass-action-circle blue">
+                        <ArrowRight size={17} className="msj-pass-arrow" />
+                      </div>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Pass 2: Student Admission Gateway Pass */}
+                <button
+                  type="button"
+                  className="msj-vip-pass-card admission-pass"
+                  id="hero-apply-admission-btn"
+                  onClick={() => handleScrollToForm("admission")}
+                >
+                  <div className="msj-pass-shimmer" />
+
+                  {/* Pass Header Stripe */}
+                  <div className="msj-pass-header">
+                    <div className="msj-pass-status-pill green">
+                      <span className="msj-pass-live-dot green" />
+                      <span>INTAKE 2026-27 ACTIVE</span>
+                    </div>
+                    <div className="msj-pass-badge gold">
+                      <Sparkles size={11} style={{ marginRight: 3 }} />
+                      <span>OFFICIAL GATEWAY</span>
+                    </div>
+                  </div>
+
+                  {/* Pass Body Content */}
+                  <div className="msj-pass-body">
+                    <div className="msj-pass-icon-box gold">
+                      <GraduationCap size={22} />
+                    </div>
+                    <div className="msj-pass-info">
+                      <div className="msj-pass-title">
+                        Student Admission Form
+                      </div>
+                      <div className="msj-pass-sub">
+                        ⚡ Fast-Track Application • 2 Min Easy Process
+                      </div>
+                    </div>
+
+                    {/* Perforated Stub / Action Trigger */}
+                    <div className="msj-pass-stub">
+                      <div className="msj-pass-stub-line" />
+                      <div className="msj-pass-action-circle gold">
                         <ArrowRight size={17} className="msj-pass-arrow" />
                       </div>
                     </div>

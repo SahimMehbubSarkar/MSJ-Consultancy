@@ -296,26 +296,34 @@ export default function AdmissionRequirementForm() {
         </div>
 
         {/* Main header content */}
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
           <div style={{
             flexShrink: 0,
-            width: 72,
-            height: 72,
-            borderRadius: 8,
+            width: 96,
+            height: 96,
+            borderRadius: "50%",
             background: "#ffffff",
-            padding: 4,
-            border: "2px solid rgba(96,165,250,0.35)",
+            padding: 5,
+            border: "4px solid rgba(96,165,250,0.45)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+            boxShadow: "0 6px 22px rgba(0,0,0,0.22)",
+            position: "relative",
           }}>
             <img
               src={logo}
               alt="University Admission Logo"
-              style={{ width: "100%", height: "100%", borderRadius: 4, objectFit: "cover", display: "block" }}
+              style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }}
               onError={(e) => { e.currentTarget.style.display = "none"; }}
             />
+            <div style={{
+              position: "absolute",
+              inset: -5,
+              borderRadius: "50%",
+              border: "2px dashed rgba(147,197,253,0.55)",
+            }}>
+            </div>
           </div>
           <div style={{ flex: 1 }}>
             <div style={{

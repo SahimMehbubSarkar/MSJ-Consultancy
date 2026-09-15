@@ -90,7 +90,7 @@ export default function AdmissionInquiriesPage() {
 
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState<AdmissionRecord | null>(null);
-  const [viewingReceiptUrl, setViewingReceiptUrl] = useState<string | null>(null);
+  const [viewingReceipt, setViewingReceipt] = useState<{ url: string; name: string; appNo: string } | null>(null);
   const [showFormBuilder, setShowFormBuilder] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [toastMsg, setToastMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -683,7 +683,7 @@ export default function AdmissionInquiriesPage() {
                         <div style={{ marginTop: 4 }}>
                           <button
                             type="button"
-                            onClick={() => setViewingReceiptUrl(item.payment_receipt || null)}
+                            onClick={() => setViewingReceipt({ url: item.payment_receipt || "", name: item.student_name, appNo: item.application_no })}
                             style={{
                               display: "inline-flex",
                               alignItems: "center",
@@ -1542,9 +1542,9 @@ export default function AdmissionInquiriesPage() {
       />
 
       {/* Payment Receipt Lightbox Modal */}
-      {viewingReceiptUrl && (
+      {viewingReceipt && (
         <div
-          onClick={() => setViewingReceiptUrl(null)}
+          onClick={() => setViewingReceipt(null)}
           style={{
             position: "fixed",
             inset: 0,
@@ -1584,11 +1584,11 @@ export default function AdmissionInquiriesPage() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.95rem", fontWeight: 800 }}>
                 <FileCheck size={18} color="#4ade80" />
-                <span>Uploaded Student Payment Receipt (Verified &lt; 3MB)</span>
+                <div style={{ display: "flex", flexDirection: "column" }}><span>Uploaded Student Payment Receipt</span><span style={{ fontSize: "0.78rem", color: "#93c5fd", fontWeight: 600, marginTop: 2 }}>{viewingReceipt.name} · {viewingReceipt.appNo}</span></div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <a
-                  href={viewingReceiptUrl}
+                  href={viewingReceipt.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -1605,7 +1605,7 @@ export default function AdmissionInquiriesPage() {
                 </a>
                 <button
                   type="button"
-                  onClick={() => setViewingReceiptUrl(null)}
+                  onClick={() => setViewingReceipt(null)}
                   style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer" }}
                 >
                   <X size={20} />
@@ -1623,10 +1623,10 @@ export default function AdmissionInquiriesPage() {
                 flex: 1,
               }}
             >
-              {viewingReceiptUrl.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || viewingReceiptUrl.startsWith("data:image") ? (
+              {viewingReceipt.url.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || viewingReceipt.url.startsWith("data:image") ? (
                 <img
-                  src={viewingReceiptUrl}
-                  alt="Payment Receipt Preview"
+                  src={viewingReceipt.url}
+                  alt={`Payment Receipt Preview for ${viewingReceipt.name}`}
                   style={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: 6, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
                 />
               ) : (
@@ -1637,7 +1637,7 @@ export default function AdmissionInquiriesPage() {
                     This receipt is a document format. Click below to view or download it.
                   </p>
                   <a
-                    href={viewingReceiptUrl}
+                    href={viewingReceipt.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{

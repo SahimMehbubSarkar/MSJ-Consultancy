@@ -78,7 +78,7 @@ export default function HospitalInquiriesPage() {
   const limit = 10;
 
   const [selectedRecord, setSelectedRecord] = useState<HospitalRecord | null>(null);
-  const [viewingReceiptUrl, setViewingReceiptUrl] = useState<string | null>(null);
+  const [viewingReceipt, setViewingReceipt] = useState<{ url: string; name: string; appNo: string } | null>(null);
   const [showFormBuilder, setShowFormBuilder] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -757,7 +757,7 @@ export default function HospitalInquiriesPage() {
                         <div style={{ marginTop: 4 }}>
                           <button
                             type="button"
-                            onClick={() => setViewingReceiptUrl(item.payment_receipt || null)}
+                            onClick={() => setViewingReceipt({ url: item.payment_receipt || "", name: item.candidate_name, appNo: item.application_no })}
                             style={{ fontSize: "0.72rem", fontWeight: 700, background: "#fef3c7", color: "#b45309", border: "1px solid #fde68a", padding: "2px 7px", borderRadius: 4, cursor: "pointer" }}
                           >
                             Receipt
@@ -1138,7 +1138,7 @@ export default function HospitalInquiriesPage() {
                         </a>
                       </div>
                       {(selectedRecord.payment_receipt.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || selectedRecord.payment_receipt.startsWith("data:image")) ? (
-                        <img src={selectedRecord.payment_receipt} alt="Payment Receipt" style={{ maxWidth: "100%", maxHeight: "280px", objectFit: "contain", background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: 6, padding: 4 }} />
+                        <img src={selectedRecord.payment_receipt} alt={`Payment Receipt for ${selectedRecord.candidate_name}`} style={{ maxWidth: "100%", maxHeight: "280px", objectFit: "contain", background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: 6, padding: 4 }} />
                       ) : (
                         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#ffffff", border: "1px solid #cbd5e1", borderRadius: 6 }}>
                           <FileText size={20} color="#2563eb" />
@@ -1240,9 +1240,9 @@ export default function HospitalInquiriesPage() {
       />
 
       {/* Payment Receipt Lightbox */}
-      {viewingReceiptUrl && (
+      {viewingReceipt && (
         <div
-          onClick={() => setViewingReceiptUrl(null)}
+          onClick={() => setViewingReceipt(null)}
           style={{ position: "fixed", inset: 0, background: "rgba(10, 25, 47, 0.85)", backdropFilter: "blur(6px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem" }}
         >
           <div
@@ -1252,20 +1252,20 @@ export default function HospitalInquiriesPage() {
             <div style={{ padding: "1rem 1.25rem", background: "#0f172a", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.95rem", fontWeight: 800 }}>
                 <FileCheck size={18} color="#4ade80" />
-                <span>Uploaded Payment Receipt</span>
+                <div style={{ display: "flex", flexDirection: "column" }}><span>Uploaded Payment Receipt</span><span style={{ fontSize: "0.78rem", color: "#93c5fd", fontWeight: 600, marginTop: 2 }}>{viewingReceipt.name} · {viewingReceipt.appNo}</span></div>
               </div>
-              <button type="button" onClick={() => setViewingReceiptUrl(null)} style={{ background: "transparent", border: "none", color: "#cbd5e1", cursor: "pointer", padding: 4 }}>
+              <button type="button" onClick={() => setViewingReceipt(null)} style={{ background: "transparent", border: "none", color: "#cbd5e1", cursor: "pointer", padding: 4 }}>
                 <X size={22} />
               </button>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", background: "#f8fafc" }}>
-              {(viewingReceiptUrl.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || viewingReceiptUrl.startsWith("data:image")) ? (
-                <img src={viewingReceiptUrl} alt="Payment Receipt" style={{ width: "100%", maxHeight: "600px", objectFit: "contain", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: 8 }} />
+              {(viewingReceipt.url.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || viewingReceipt.url.startsWith("data:image")) ? (
+                <img src={viewingReceipt.url} alt={`Payment Receipt for ${viewingReceipt.name}`} style={{ width: "100%", maxHeight: "600px", objectFit: "contain", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: 8 }} />
               ) : (
                 <div style={{ textAlign: "center", padding: "2rem" }}>
                   <FileText size={48} color="#2563eb" style={{ marginBottom: "1rem" }} />
                   <p style={{ fontWeight: 600, color: "#0f172a" }}>PDF or Document Receipt</p>
-                  <a href={viewingReceiptUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 700, textDecoration: "underline" }}>
+                  <a href={viewingReceipt.url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 700, textDecoration: "underline" }}>
                     Open in New Tab
                   </a>
                 </div>

@@ -12,28 +12,7 @@ export async function GET(request) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // 1. Compute 3 Summary Metric Cards
-    const statsQuery = await query(`
-      SELECT 
-        COUNT(*)::int AS total_inquiries,
-        COUNT(CASE WHEN payment_status = 'paid' THEN 1 END)::int AS total_paid_count,
-        COALESCE(SUM(CASE WHEN payment_status = 'paid' THEN paid_amount ELSE 0 END), 0)::numeric AS total_paid_amount,
-        COUNT(CASE WHEN status = 'completed' THEN 1 END)::int AS completed_count,
-        COUNT(CASE WHEN status = 'pending' THEN 1 END)::int AS pending_count,
-        COUNT(CASE WHEN status = 'rejected' THEN 1 END)::int AS rejected_count
-      FROM hospital_requirement
-    `);
-
-    const stats = statsQuery.rows[0] || {
-      total_inquiries: 0,
-      total_paid_count: 0,
-      total_paid_amount: 0,
-      completed_count: 0,
-      pending_count: 0,
-      rejected_count: 0,
-    };
-
-    // 2. Fetch Latest Records with Filters
+    // Build WHERE clauses and params
     let whereClauses = [];
     let params = [];
 
@@ -66,45 +45,65 @@ export async function GET(request) {
     params.push(offset);
     const offsetParamIndex = params.length;
 
-    const recordsQuery = await query(`
-      SELECT 
-        id,
-        application_no,
-        candidate_name,
-        email,
-        phone,
-        gender,
-        target_state,
-        qualification,
-        target_hospital,
-        department,
-        madhyamik_marks,
-        hs_marks,
-        status,
-        payment_status,
-        application_fee,
-        paid_amount,
-        payment_method,
-        transaction_id,
-        payment_receipt,
-        cv_attach,
-        template_header,
-        template_footer,
-        form_data,
-        coordinator_notes,
-        created_at,
-        updated_at
-      FROM hospital_requirement
-      ${whereString}
-      ORDER BY created_at DESC
-      LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
-    `, params);
+    // Run stats + records in parallel (records includes total count via window function)
+    const [statsResult, recordsResult] = await Promise.all([
+      query(`
+        SELECT 
+          COUNT(*)::int AS total_inquiries,
+          COUNT(CASE WHEN payment_status = 'paid' THEN 1 END)::int AS total_paid_count,
+          COALESCE(SUM(CASE WHEN payment_status = 'paid' THEN paid_amount ELSE 0 END), 0)::numeric AS total_paid_amount,
+          COUNT(CASE WHEN status = 'completed' THEN 1 END)::int AS completed_count,
+          COUNT(CASE WHEN status = 'pending' THEN 1 END)::int AS pending_count,
+          COUNT(CASE WHEN status = 'rejected' THEN 1 END)::int AS rejected_count
+        FROM hospital_requirement
+      `),
+      query(`
+        SELECT 
+          id,
+          application_no,
+          candidate_name,
+          email,
+          phone,
+          gender,
+          target_state,
+          qualification,
+          target_hospital,
+          department,
+          madhyamik_marks,
+          hs_marks,
+          status,
+          payment_status,
+          application_fee,
+          paid_amount,
+          payment_method,
+          transaction_id,
+          payment_receipt,
+          cv_attach,
+          template_header,
+          template_footer,
+          coordinator_notes,
+          created_at,
+          updated_at,
+          COUNT(*) OVER() AS total_count
+        FROM hospital_requirement
+        ${whereString}
+        ORDER BY created_at DESC
+        LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}
+      `, params),
+    ]);
 
-    // Total count for current filter
-    const countParams = params.slice(0, params.length - 2);
-    const totalFilteredQuery = await query(`
-      SELECT COUNT(*)::int AS count FROM hospital_requirement ${whereString}
-    `, countParams);
+    const stats = statsResult.rows[0] || {
+      total_inquiries: 0,
+      total_paid_count: 0,
+      total_paid_amount: 0,
+      completed_count: 0,
+      pending_count: 0,
+      rejected_count: 0,
+    };
+
+    const records = recordsResult.rows;
+    const totalCount = records.length > 0 ? records[0].total_count : 0;
+    records.forEach(r => delete r.total_count);
 
     return NextResponse.json({
       success: true,
@@ -118,11 +117,11 @@ export async function GET(request) {
         pendingCount: stats.pending_count,
         rejectedCount: stats.rejected_count,
       },
-      records: recordsQuery.rows,
+      records,
       pagination: {
         limit,
         offset,
-        total: totalFilteredQuery.rows[0]?.count || 0,
+        total: totalCount,
       }
     });
   } catch (error) {

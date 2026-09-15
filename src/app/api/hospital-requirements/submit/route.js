@@ -21,8 +21,8 @@ export async function POST(request) {
     const paymentReceipt = body.payment_receipt || body.receipt || '';
     const cvAttach = body.cv_attach || body.cv || '';
     const paymentMethod = paymentReceipt ? 'UPI / QR Scan' : (body.payment_method || null);
-    const paymentStatus = paymentReceipt ? 'paid' : (body.payment_status || 'unpaid');
-    const paidAmount = paymentReceipt ? applicationFee : 0.00;
+    const paymentStatus = paymentReceipt ? 'pending' : (body.payment_status || 'unpaid');
+    const paidAmount = paymentReceipt ? 0.00 : 0.00;
     const coordinatorNotes = body.coordinator_notes || body.notes || 'Online hospital requirement inquiry submitted.';
     const templateHeader = body.template_header || 'MSJ Global Education • Official Hospital Consultation & Placement Application';
     const templateFooter = body.template_footer || 'Certified by MSJ Clinical Coordination Board • 100% Verified Hospital Placement & Training Assistance';

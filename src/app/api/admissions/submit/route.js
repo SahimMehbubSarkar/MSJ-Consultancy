@@ -23,8 +23,8 @@ export async function POST(request) {
     const templateFooter = body.template_footer || 'Certified by MSJ Academic Board • 100% Clinical Training Assistance';
     const paymentReceipt = body.payment_receipt || body.receipt || '';
     const paymentMethod = body.payment_method || (paymentReceipt ? 'UPI / QR Scan' : null);
-    const paymentStatus = paymentReceipt ? 'paid' : (body.payment_status || 'unpaid');
-    const paidAmount = paymentReceipt ? 1000.00 : (parseFloat(body.paid_amount) || 0.00);
+    const paymentStatus = paymentReceipt ? 'pending' : (body.payment_status || 'unpaid');
+    const paidAmount = paymentReceipt ? 0.00 : (parseFloat(body.paid_amount) || 0.00);
     const formData = body.form_data || {};
     const termsAccepted = body.terms_accepted === true;
 

@@ -45,6 +45,7 @@ async function migrateStudentAdmissions() {
         template_header VARCHAR(255) DEFAULT 'MSJ Global Education • Official Admission Application',
         template_footer VARCHAR(255) DEFAULT 'Certified by MSJ Academic Board • 100% Clinical Training Assistance',
         form_data JSONB DEFAULT '{}',
+        terms_accepted BOOLEAN DEFAULT false,
         counselor_notes TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -218,14 +219,16 @@ async function migrateStudentAdmissions() {
             target_country, study_level, preferred_course, target_university,
             admission_logo, madhyamik_marks, hs_marks, status,
             payment_status, application_fee, paid_amount, payment_method,
-            transaction_id, counselor_notes
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+            transaction_id, payment_receipt, template_header, template_footer,
+            form_data, terms_accepted, counselor_notes
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
         `, [
           s.application_no, s.student_name, s.email, s.phone, s.gender,
           s.target_country, s.study_level, s.preferred_course, s.target_university,
           s.admission_logo, s.madhyamik_marks, s.hs_marks, s.status,
           s.payment_status, s.application_fee, s.paid_amount, s.payment_method,
-          s.transaction_id, s.counselor_notes
+          s.transaction_id, s.payment_receipt, s.template_header, s.template_footer,
+          JSON.stringify({}), false, s.counselor_notes
         ]);
       }
       console.log(`Seeded ${initialStudents.length} realistic student admissions.`);

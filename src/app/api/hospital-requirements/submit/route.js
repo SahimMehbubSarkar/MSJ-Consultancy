@@ -27,10 +27,18 @@ export async function POST(request) {
     const templateHeader = body.template_header || 'MSJ Global Education • Official Hospital Consultation & Placement Application';
     const templateFooter = body.template_footer || 'Certified by MSJ Clinical Coordination Board • 100% Verified Hospital Placement & Training Assistance';
     const formData = body.form_data || {};
+    const termsAccepted = body.terms_accepted === true;
 
     if (!candidateName.trim() || !email.trim() || !phone.trim()) {
       return NextResponse.json(
         { success: false, message: 'Candidate name, email, and phone number are required.' },
+        { status: 400 }
+      );
+    }
+
+    if (!termsAccepted) {
+      return NextResponse.json(
+        { success: false, message: 'You must accept the Terms & Conditions to proceed.' },
         { status: 400 }
       );
     }
@@ -83,8 +91,9 @@ export async function POST(request) {
         template_header,
         template_footer,
         form_data,
+        terms_accepted,
         coordinator_notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
       RETURNING *
       `,
       [
@@ -110,6 +119,7 @@ export async function POST(request) {
         templateHeader,
         templateFooter,
         JSON.stringify(formData),
+        termsAccepted,
         coordinatorNotes
       ]
     );

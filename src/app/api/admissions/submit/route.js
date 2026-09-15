@@ -26,10 +26,18 @@ export async function POST(request) {
     const paymentStatus = paymentReceipt ? 'paid' : (body.payment_status || 'unpaid');
     const paidAmount = paymentReceipt ? 1000.00 : (parseFloat(body.paid_amount) || 0.00);
     const formData = body.form_data || {};
+    const termsAccepted = body.terms_accepted === true;
 
     if (!studentName.trim() || !email.trim() || !phone.trim()) {
       return NextResponse.json(
         { success: false, message: 'Student name, email, and phone number are required.' },
+        { status: 400 }
+      );
+    }
+
+    if (!termsAccepted) {
+      return NextResponse.json(
+        { success: false, message: 'You must accept the Terms & Conditions to proceed.' },
         { status: 400 }
       );
     }
@@ -82,8 +90,9 @@ export async function POST(request) {
         template_header,
         template_footer,
         form_data,
+        terms_accepted,
         counselor_notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
       RETURNING *
       `,
       [
@@ -109,6 +118,7 @@ export async function POST(request) {
         templateHeader,
         templateFooter,
         JSON.stringify(formData),
+        termsAccepted,
         counselorNotes
       ]
     );

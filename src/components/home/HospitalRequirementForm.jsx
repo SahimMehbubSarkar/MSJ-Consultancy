@@ -64,6 +64,7 @@ export default function HospitalRequirementForm() {
   const [cvFile, setCvFile] = useState("");
   const [cvError, setCvError] = useState("");
   const [cvDragOver, setCvDragOver] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
   const [focused, setFocused] = useState(null);
@@ -229,10 +230,12 @@ export default function HospitalRequirementForm() {
     );
 
     const receiptMissing = !receiptFile;
+    const termsMissing = !termsAccepted;
 
-    if (missing.length > 0 || receiptMissing) {
+    if (missing.length > 0 || receiptMissing || termsMissing) {
       const firstMissing = missing[0];
-      const targetId = firstMissing ? `hosp_field_${firstMissing.id}` : "hospital-receipt-file";
+      let targetId = firstMissing ? `hosp_field_${firstMissing.id}` : "hospital-receipt-file";
+      if (termsMissing) targetId = "hospital-terms-checkbox";
       const targetEl = document.getElementById(targetId);
       if (targetEl) {
         targetEl.focus?.();
@@ -241,6 +244,7 @@ export default function HospitalRequirementForm() {
 
       const missingLabels = missing.map((f) => f.label);
       if (receiptMissing) missingLabels.push("Payment Receipt");
+      if (termsMissing) missingLabels.push("Terms & Conditions agreement");
       setResult({
         success: false,
         message: `Please fill required fields: ${missingLabels.join(", ")}`,
@@ -258,6 +262,7 @@ export default function HospitalRequirementForm() {
     });
     payload.template_header = template?.template_header;
     payload.template_footer = template?.template_footer;
+    payload.terms_accepted = true;
     payload.form_data = { ...formData };
     delete payload.form_data.payment_receipt;
     delete payload.form_data.cv_attach;
@@ -873,6 +878,36 @@ export default function HospitalRequirementForm() {
             {result.message}
           </div>
         )}
+
+        <div className="msj-form-grid-2" style={{ alignItems: "flex-start" }}>
+          <div
+            className={`msj-floating-group ${!termsAccepted && formSubmitted ? "has-error" : ""}`}
+            style={{ display: "flex", alignItems: "flex-start", gap: 10 }}
+          >
+            <input
+              type="checkbox"
+              id="hospital-terms-checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              required
+              style={{ marginTop: 4, width: 18, height: 18, accentColor: "#0a1d37", cursor: "pointer" }}
+            />
+            <label htmlFor="hospital-terms-checkbox" style={{ fontSize: "0.78rem", color: "#0f172a", lineHeight: 1.5, cursor: "pointer" }}>
+              I have read and agree to the
+              <strong> Terms &amp; Conditions </strong>
+              and
+              <strong> Privacy Policy </strong>
+              of MSJ Global Education.
+              <span className="msj-req-star"> *</span>
+            </label>
+          </div>
+          {!termsAccepted && formSubmitted && (
+            <div className="msj-field-error-msg">
+              <AlertCircle size={12} />
+              <span>You must agree to the Terms &amp; Conditions to submit.</span>
+            </div>
+          )}
+        </div>
 
         <button
           type="submit"

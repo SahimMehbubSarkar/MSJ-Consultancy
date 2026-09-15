@@ -992,35 +992,54 @@ export default function HospitalInquiriesPage() {
             <div className="msj-modal-body" style={{ background: "#f8fafc", padding: "1.5rem", flex: 1, overflowY: "auto" }}>
               <div style={{ background: "#ffffff", border: "1.5px solid #cbd5e1", borderRadius: 14, boxShadow: "0 4px 20px rgba(0,0,0,0.06)", padding: "1.75rem", position: "relative" }}>
                 {/* 1. Dynamic Header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: "1.25rem", borderBottom: "2px solid #0f172a", marginBottom: "1.5rem", flexWrap: "wrap", gap: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem 1.5rem", background: "linear-gradient(135deg, #0a1d37 0%, #0c2340 50%, #102d50 100%)", borderRadius: 12, marginBottom: "1.5rem", flexWrap: "wrap", gap: 14, color: "#ffffff" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
                     <div style={{ transform: `translateX(${logoOffset}px)`, transition: "transform 0.18s cubic-bezier(0.16, 1, 0.3, 1)" }}>
-                      {hospitalLogo ? (
-                        <img src={hospitalLogo} alt="Hospital Logo" style={{ width: 60, height: 60, borderRadius: 10, objectFit: "cover", border: "2px solid #d97706", boxShadow: "0 2px 8px rgba(217,119,6,0.2)" }} />
-                      ) : (
-                        <div style={{ width: 60, height: 60, borderRadius: 10, background: "#fef3c7", border: "2px solid #fde68a", display: "flex", alignItems: "center", justifyContent: "center", color: "#d97706" }}>
-                          <HeartPulse size={32} />
+                      <div style={{
+                        width: 88,
+                        height: 88,
+                        borderRadius: "50%",
+                        background: "#ffffff",
+                        padding: 5,
+                        border: "4px solid rgba(96,165,250,0.45)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 6px 22px rgba(0,0,0,0.22)",
+                        position: "relative",
+                      }}>
+                        {hospitalLogo ? (
+                          <img src={hospitalLogo} alt="Hospital Logo" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", display: "block" }} />
+                        ) : (
+                          <HeartPulse size={42} color="#d97706" />
+                        )}
+                        <div style={{
+                          position: "absolute",
+                          inset: -5,
+                          borderRadius: "50%",
+                          border: "2px dashed rgba(147,197,253,0.55)",
+                        }}>
                         </div>
-                      )}
+                      </div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "0.76rem", fontWeight: 800, color: "#d97706", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                        OFFICIAL CONSULTATION DOSSIER
+                      <div style={{ fontSize: "0.76rem", fontWeight: 800, color: "#60a5fa", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 3 }}>
+                        Official Hospital Placement Dossier
                       </div>
-                      <h2 style={{ margin: "2px 0 0", fontSize: "1.25rem", fontWeight: 800, color: "#0f172a" }}>
+                      <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 800, color: "#ffffff", lineHeight: 1.25 }}>
                         {templateHeader || "MSJ Global Education • Official Hospital Consultation Application"}
                       </h2>
-                      <div style={{ fontSize: "0.82rem", color: "#64748b", marginTop: 2 }}>
-                        Hospital: <strong style={{ color: "#b45309" }}>{selectedRecord.target_hospital}</strong> ({selectedRecord.target_state})
+                      <div style={{ fontSize: "0.85rem", color: "#cbd5e1", marginTop: 3 }}>
+                        Hospital: <strong style={{ color: "#93c5fd" }}>{selectedRecord.target_hospital}</strong> ({selectedRecord.target_state})
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ display: "inline-block", padding: "4px 10px", borderRadius: 6, fontWeight: 800, fontSize: "0.85rem", letterSpacing: "0.04em", background: "#0f172a", color: "#ffffff" }}>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ display: "inline-block", padding: "5px 12px", borderRadius: 8, fontWeight: 800, fontSize: "0.85rem", letterSpacing: "0.04em", background: "rgba(255,255,255,0.12)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.2)" }}>
                       {selectedRecord.application_no}
                     </div>
-                    <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: 4 }}>
-                      Date: {formatDate(selectedRecord.created_at)}
+                    <div style={{ fontSize: "0.75rem", color: "#bfdbfe", marginTop: 5 }}>
+                      {formatDate(selectedRecord.created_at)}
                     </div>
                   </div>
                 </div>

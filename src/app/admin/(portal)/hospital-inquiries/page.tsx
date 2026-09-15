@@ -19,6 +19,7 @@ import {
   Save,
   FileCheck,
   FileText,
+  Download,
   ExternalLink,
 } from "lucide-react";
 import FormBuilderModal from "@/components/FormBuilderModal";
@@ -1259,17 +1260,36 @@ export default function HospitalInquiriesPage() {
               </button>
             </div>
             <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", background: "#f8fafc" }}>
-              {(viewingReceipt.url.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || viewingReceipt.url.startsWith("data:image")) ? (
-                <img src={viewingReceipt.url} alt={`Payment Receipt for ${viewingReceipt.name}`} style={{ width: "100%", maxHeight: "600px", objectFit: "contain", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: 8 }} />
-              ) : (
-                <div style={{ textAlign: "center", padding: "2rem" }}>
-                  <FileText size={48} color="#2563eb" style={{ marginBottom: "1rem" }} />
-                  <p style={{ fontWeight: 600, color: "#0f172a" }}>PDF or Document Receipt</p>
-                  <a href={viewingReceipt.url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 700, textDecoration: "underline" }}>
-                    Open in New Tab
-                  </a>
-                </div>
-              )}
+              {(() => {
+                const url = viewingReceipt.url;
+                const isImage = url.match(/\.(jpeg|jpg|png|webp|gif|bmp)($|\?)/i) || url.startsWith("data:image");
+                const isPdf = url.match(/\.pdf($|\?)/i) || url.startsWith("data:application/pdf");
+                if (isImage) {
+                  return <img src={url} alt={`Payment Receipt for ${viewingReceipt.name}`} style={{ width: "100%", maxHeight: "600px", objectFit: "contain", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 8, padding: 8 }} onError={() => alert("Unable to load receipt image.")} />;
+                }
+                if (isPdf) {
+                  return (
+                    <div style={{ textAlign: "center", padding: "2rem" }}>
+                      <FileText size={48} color="#dc2626" style={{ marginBottom: "1rem" }} />
+                      <p style={{ fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>PDF Receipt Attached</p>
+                      <p style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: 20 }}>Click below to view or download the PDF receipt.</p>
+                      <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#2563eb", color: "#ffffff", padding: "8px 20px", borderRadius: 6, fontWeight: 700, textDecoration: "none" }}>
+                        <Download size={16} /> Open / Download PDF
+                      </a>
+                    </div>
+                  );
+                }
+                return (
+                  <div style={{ textAlign: "center", padding: "2rem" }}>
+                    <FileText size={48} color="#2563eb" style={{ marginBottom: "1rem" }} />
+                    <p style={{ fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>Document Receipt</p>
+                    <p style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: 20 }}>Click below to view or download the uploaded file.</p>
+                    <a href={url} target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", fontWeight: 700, textDecoration: "underline" }}>
+                      Open in New Tab
+                    </a>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

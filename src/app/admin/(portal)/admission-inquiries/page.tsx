@@ -1623,39 +1623,77 @@ export default function AdmissionInquiriesPage() {
                 flex: 1,
               }}
             >
-              {viewingReceipt.url.match(/\.(jpeg|jpg|png|webp)($|\?)/i) || viewingReceipt.url.startsWith("data:image") ? (
-                <img
-                  src={viewingReceipt.url}
-                  alt={`Payment Receipt Preview for ${viewingReceipt.name}`}
-                  style={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: 6, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                />
-              ) : (
-                <div style={{ padding: "3rem 1rem" }}>
-                  <FileText size={48} color="#2563eb" style={{ margin: "0 auto 1rem" }} />
-                  <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a" }}>PDF / Document File Receipt</div>
-                  <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "8px 0 1.25rem" }}>
-                    This receipt is a document format. Click below to view or download it.
-                  </p>
-                  <a
-                    href={viewingReceipt.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      background: "#2563eb",
-                      color: "#ffffff",
-                      padding: "8px 20px",
-                      borderRadius: 6,
-                      fontWeight: 700,
-                      textDecoration: "none",
-                    }}
-                  >
-                    <Download size={16} /> Download / View Document
-                  </a>
-                </div>
-              )}
+              {(() => {
+                const url = viewingReceipt.url;
+                const isImage = url.match(/\.(jpeg|jpg|png|webp|gif|bmp)($|\?)/i) || url.startsWith("data:image");
+                const isPdf = url.match(/\.pdf($|\?)/i) || url.startsWith("data:application/pdf");
+                if (isImage) {
+                  return (
+                    <img
+                      src={url}
+                      alt={`Payment Receipt Preview for ${viewingReceipt.name}`}
+                      style={{ maxWidth: "100%", maxHeight: "70vh", objectFit: "contain", borderRadius: 6, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                      onError={() => alert("Unable to load receipt image. The file may be corrupt or too large.")}
+                    />
+                  );
+                }
+                if (isPdf) {
+                  return (
+                    <div style={{ textAlign: "center" }}>
+                      <FileText size={48} color="#dc2626" style={{ margin: "0 auto 1rem" }} />
+                      <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a" }}>PDF Receipt Attached</div>
+                      <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "8px 0 1.25rem" }}>
+                        This receipt is a PDF document. Click below to view or download.
+                      </p>
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          background: "#2563eb",
+                          color: "#ffffff",
+                          padding: "8px 20px",
+                          borderRadius: 6,
+                          fontWeight: 700,
+                          textDecoration: "none",
+                        }}
+                      >
+                        <Download size={16} /> Open / Download PDF
+                      </a>
+                    </div>
+                  );
+                }
+                return (
+                  <div style={{ padding: "3rem 1rem" }}>
+                    <FileText size={48} color="#2563eb" style={{ margin: "0 auto 1rem" }} />
+                    <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a" }}>Document Receipt</div>
+                    <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "8px 0 1.25rem" }}>
+                      This receipt is not an image. Click below to view or download the file.
+                    </p>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        background: "#2563eb",
+                        color: "#ffffff",
+                        padding: "8px 20px",
+                        borderRadius: 6,
+                        fontWeight: 700,
+                        textDecoration: "none",
+                      }}
+                    >
+                      <Download size={16} /> Download / View File
+                    </a>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

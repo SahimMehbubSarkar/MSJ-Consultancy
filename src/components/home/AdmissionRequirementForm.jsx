@@ -379,8 +379,8 @@ export default function AdmissionRequirementForm() {
                         {selectedStates.length === 0
                           ? "— Select preferred state (Up to 4) —"
                           : selectedStates.length >= 4
-                          ? "✓ Maximum 4 states selected"
-                          : `+ Add another preferred state (${selectedStates.length}/4 selected)`}
+                            ? "✓ Maximum 4 states selected"
+                            : `+ Add another preferred state (${selectedStates.length}/4 selected)`}
                       </option>
                       {(field.options || []).map((opt, idx) => {
                         const isSelected = selectedStates.includes(opt);

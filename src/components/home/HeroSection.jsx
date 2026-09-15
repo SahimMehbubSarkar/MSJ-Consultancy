@@ -12,6 +12,7 @@ import {
   Building2,
   Award,
   BookOpen,
+  UserCheck,
 } from "lucide-react";
 
 export default function HeroSection({ onSelectTab }) {
@@ -155,14 +156,14 @@ export default function HeroSection({ onSelectTab }) {
                   {/* Pass Body Content */}
                   <div className="msj-pass-body">
                     <div className="msj-pass-icon-box blue">
-                      <HeartPulse size={22} />
+                      <UserCheck size={22} />
                     </div>
                     <div className="msj-pass-info">
                       <div className="msj-pass-title">
-                        Hospital Requirement Form
+                        Hospital Hiring &amp; Job Application
                       </div>
                       <div className="msj-pass-sub">
-                        🏥 Clinical Bedside Training &amp; Tie-ups
+                        💼 Clinical Staff Recruitment &amp; Tie-ups
                       </div>
                     </div>
 

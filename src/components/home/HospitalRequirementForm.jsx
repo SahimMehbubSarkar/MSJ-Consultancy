@@ -406,7 +406,7 @@ export default function HospitalRequirementForm() {
     return (
       <div style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
         <Loader2 size={28} className="spin" style={{ margin: "0 auto 10px" }} />
-        <div style={{ fontSize: "0.9rem", fontWeight: 600 }}>Loading Hospital Requirement Inquiry...</div>
+        <div style={{ fontSize: "0.9rem", fontWeight: 600 }}>Loading Hospital Hiring &amp; Job Application...</div>
       </div>
     );
   }
@@ -564,8 +564,8 @@ export default function HospitalRequirementForm() {
                         {selectedStates.length === 0
                           ? "— Select preferred state (Up to 4) —"
                           : selectedStates.length >= 4
-                          ? "✓ Maximum 4 states selected"
-                          : `+ Add another preferred state (${selectedStates.length}/4 selected)`}
+                            ? "✓ Maximum 4 states selected"
+                            : `+ Add another preferred state (${selectedStates.length}/4 selected)`}
                       </option>
                       {(field.options || []).map((opt, idx) => {
                         const isSelected = selectedStates.includes(opt);
@@ -817,7 +817,7 @@ export default function HospitalRequirementForm() {
                   <UploadCloud size={16} /> {cvDragOver ? "Drop file here" : "Choose CV File (or Drag & Drop)"}
                 </label>
                 <div style={{ fontSize: "0.70rem", color: "#64748b", marginTop: 5 }}>
-  PDF, DOC, DOCX only • Max 3MB
+                  PDF, DOC, DOCX only • Max 3MB
                 </div>
               </div>
             )}

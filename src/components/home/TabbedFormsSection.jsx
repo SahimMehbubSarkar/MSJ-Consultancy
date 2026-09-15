@@ -5,6 +5,7 @@ import {
   GraduationCap,
   HeartPulse,
   User,
+  UserCheck,
   Mail,
   Phone,
   Globe,
@@ -377,8 +378,8 @@ export default function TabbedFormsSection({ activeTab = "admission", setActiveT
             }}
             id="tab-btn-hospital"
           >
-            <HeartPulse size={19} className="msj-tab-icon" />
-            <span>Hospital Requirement Inquiry</span>
+            <UserCheck size={19} className="msj-tab-icon" />
+            <span>Hospital Hiring &amp; Job Application</span>
           </button>
         </div>
       </div>

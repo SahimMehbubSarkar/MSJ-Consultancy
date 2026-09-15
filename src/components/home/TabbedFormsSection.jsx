@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import HospitalRequirementForm from "./HospitalRequirementForm";
 import AdmissionRequirementForm from "./AdmissionRequirementForm";
-export default function TabbedFormsSection({ activeTab = "admission", setActiveTab }) {
+export default function TabbedFormsSection({ activeTab = "hospital", setActiveTab }) {
   // Local state for active tab if not passed
   const [currentTab, setCurrentTab] = useState(activeTab);
   const effectiveTab = setActiveTab ? activeTab : currentTab;
@@ -356,20 +356,6 @@ export default function TabbedFormsSection({ activeTab = "admission", setActiveT
         <div className="msj-tabs-pill-box">
           <button
             type="button"
-            className={`msj-tab-btn ${effectiveTab === "admission" ? "active" : ""}`}
-            onClick={() => {
-              setTab("admission");
-              setSubmissionResult(null);
-              setErrorMsg("");
-            }}
-            id="tab-btn-admission"
-          >
-            <GraduationCap size={19} className="msj-tab-icon" />
-            <span>Student Admission Form</span>
-          </button>
-
-          <button
-            type="button"
             className={`msj-tab-btn ${effectiveTab === "hospital" ? "active" : ""}`}
             onClick={() => {
               setTab("hospital");
@@ -380,6 +366,20 @@ export default function TabbedFormsSection({ activeTab = "admission", setActiveT
           >
             <UserCheck size={19} className="msj-tab-icon" />
             <span>Hospital Hiring &amp; Job Application</span>
+          </button>
+
+          <button
+            type="button"
+            className={`msj-tab-btn ${effectiveTab === "admission" ? "active" : ""}`}
+            onClick={() => {
+              setTab("admission");
+              setSubmissionResult(null);
+              setErrorMsg("");
+            }}
+            id="tab-btn-admission"
+          >
+            <GraduationCap size={19} className="msj-tab-icon" />
+            <span>Student Admission Form</span>
           </button>
         </div>
       </div>
@@ -430,17 +430,17 @@ export default function TabbedFormsSection({ activeTab = "admission", setActiveT
       {/* Form Card Container */}
       <div className="msj-form-card" style={{ padding: 0, overflow: "hidden", border: "1.5px solid #cbd5e1" }}>
         {/* ====================================================================
-            TAB 1: STUDENT ADMISSION FORM (EXACT MATCH TO OFFICIAL MODAL)
-            ==================================================================== */}
-        <div style={{ display: effectiveTab === "admission" ? "block" : "none" }}>
-          <AdmissionRequirementForm />
-        </div>
-
-        {/* ====================================================================
-            TAB 2: HOSPITAL REQUIREMENT INQUIRY
+            TAB 1: HOSPITAL REQUIREMENT INQUIRY
             ==================================================================== */}
         <div style={{ display: effectiveTab === "hospital" ? "block" : "none" }}>
           <HospitalRequirementForm />
+        </div>
+
+        {/* ====================================================================
+            TAB 2: STUDENT ADMISSION FORM (EXACT MATCH TO OFFICIAL MODAL)
+            ==================================================================== */}
+        <div style={{ display: effectiveTab === "admission" ? "block" : "none" }}>
+          <AdmissionRequirementForm />
         </div>
       </div>
     </section>

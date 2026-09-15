@@ -11,7 +11,7 @@ import "./homepage.css";
 
 export default function HomeClient({ initialSettings }) {
   const [settings, setSettings] = useState(initialSettings || null);
-  const [activeTab, setActiveTab] = useState("admission"); // "admission" | "hospital"
+  const [activeTab, setActiveTab] = useState("hospital"); // "admission" | "hospital"
 
   useEffect(() => {
     // Fetch live site settings from public endpoint if not present or to refresh

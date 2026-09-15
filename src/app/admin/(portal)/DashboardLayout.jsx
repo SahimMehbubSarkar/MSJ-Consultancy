@@ -122,6 +122,7 @@ export default function DashboardLayout({ adminName, adminEmail, adminAvatar, si
         const res = await fetch("/api/admin/verify", {
           method: "GET",
           cache: "no-store",
+          credentials: "same-origin",
         });
         if (!res.ok) {
           router.replace("/admin/login?expired=true");

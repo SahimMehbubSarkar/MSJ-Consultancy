@@ -24,6 +24,7 @@ export async function apiClient(url, options = {}) {
 
   const config = {
     ...options,
+    credentials: 'same-origin',
     headers: {
       ...defaultHeaders,
       ...options.headers,

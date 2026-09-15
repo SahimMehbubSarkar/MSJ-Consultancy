@@ -77,7 +77,7 @@ export default function DashboardLayout({ adminName, adminEmail, adminAvatar, si
         console.warn("Could not load site settings for sidebar:", err);
       }
     }
-    if (!siteName) loadSiteSettings();
+    loadSiteSettings();
   }, []);
 
   const brandTitle = siteSettings.siteName ? siteSettings.siteName.split(" ")[0] : "MSJ";

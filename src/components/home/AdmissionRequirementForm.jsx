@@ -649,6 +649,39 @@ export default function AdmissionRequirementForm() {
               </div>
             )}
             {receiptError && <div style={{ color: "#dc2626", fontSize: "0.75rem", marginTop: 4 }}>{receiptError}</div>}
+            {receiptFile && (
+              <div style={{ marginTop: 10, borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", overflow: "hidden" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 12px", background: "#f1f5f9", borderBottom: "1px solid #e2e8f0" }}>
+                  <span style={{ fontSize: "0.74rem", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: 6 }}>
+                    <FileCheck size={14} color="#16a34a" /> Receipt Preview
+                  </span>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <label htmlFor="admission-receipt-file" style={{ fontSize: "0.72rem", fontWeight: 700, color: "#2563eb", cursor: "pointer", textDecoration: "underline" }}>
+                      Replace
+                    </label>
+                    <button type="button" onClick={() => { setReceiptFile(""); setReceiptError(""); }} style={{ fontSize: "0.72rem", fontWeight: 700, color: "#dc2626", cursor: "pointer", background: "none", border: "none" }}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+                <div style={{ padding: 10, textAlign: "center", background: "#ffffff" }}>
+                  {receiptFile.startsWith("data:image") || receiptFile.match(/\.(jpeg|jpg|png|webp|gif|bmp)($|\?)/i) ? (
+                    <img src={receiptFile} alt="Receipt Preview" style={{ maxWidth: "100%", maxHeight: 200, objectFit: "contain", borderRadius: 4, border: "1px solid #e2e8f0" }} />
+                  ) : receiptFile.startsWith("data:application/pdf") || receiptFile.match(/\.pdf($|\?)/i) ? (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "1rem" }}>
+                      <FileText size={36} color="#dc2626" />
+                      <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#0f172a" }}>PDF Receipt Attached</span>
+                      <span style={{ fontSize: "0.70rem", color: "#64748b" }}>Click submit to upload this PDF</span>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, padding: "1rem" }}>
+                      <FileText size={36} color="#2563eb" />
+                      <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#0f172a" }}>Document Attached</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

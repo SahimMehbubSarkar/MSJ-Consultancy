@@ -115,10 +115,10 @@ export default function HeroSection({ onSelectTab }) {
                     </div>
                     <div className="msj-pass-info">
                       <div className="msj-pass-title">
-                        Hospital Hiring &amp; Job Application
+                        Direct Hospital Registry
                       </div>
                       <div className="msj-pass-sub">
-                        💼 Clinical Staff Recruitment &amp; Tie-ups
+                        💼 Hospital Hiring &amp; Job Application
                       </div>
                     </div>
 

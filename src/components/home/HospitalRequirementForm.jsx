@@ -444,7 +444,6 @@ export default function HospitalRequirementForm() {
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
           paddingBottom: "0.75rem",
           marginBottom: "1rem",
           borderBottom: "1px solid rgba(147,197,253,0.15)",
@@ -461,21 +460,6 @@ export default function HospitalRequirementForm() {
           }}>
             <ShieldCheck size={16} color="#60a5fa" />
             <span>{template.top_banner_title}</span>
-          </div>
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            fontSize: "0.72rem",
-            color: "#bfdbfe",
-            fontWeight: 600,
-            background: "rgba(30,58,138,0.35)",
-            padding: "4px 10px",
-            borderRadius: 6,
-            border: "1px solid rgba(96,165,250,0.2)",
-          }}>
-            <Lock size={13} color="#60a5fa" />
-            <span>{template.top_banner_tag}</span>
           </div>
         </div>
 

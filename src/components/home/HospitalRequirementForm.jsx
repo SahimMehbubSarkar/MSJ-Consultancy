@@ -421,35 +421,113 @@ export default function HospitalRequirementForm() {
   return (
     <form onSubmit={handleSubmit} noValidate>
       {/* Header */}
-      <div style={{ background: "#0c2340", color: "#ffffff", padding: "1.15rem 1.75rem 1.25rem 1.75rem", borderBottom: "3px solid #1e3a8a" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: "0.6rem", marginBottom: "0.75rem", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.06em", color: "#93c5fd" }}>
-            <ShieldCheck size={15} color="#93c5fd" />
+      <div style={{
+        background: "linear-gradient(135deg, #0a1d37 0%, #0c2340 50%, #102d50 100%)",
+        color: "#ffffff",
+        padding: "1.5rem 2rem 1.5rem 2rem",
+        borderBottom: "4px solid #1e3a8a",
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        {/* Decorative accent bar */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: 4,
+          height: "100%",
+          background: "linear-gradient(180deg, #3b82f6, #1e3a8a)",
+        }}>
+        </div>
+
+        {/* Top banner row */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingBottom: "0.75rem",
+          marginBottom: "1rem",
+          borderBottom: "1px solid rgba(147,197,253,0.15)",
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: "0.74rem",
+            fontWeight: 700,
+            letterSpacing: "0.07em",
+            color: "#93c5fd",
+            textTransform: "uppercase",
+          }}>
+            <ShieldCheck size={16} color="#60a5fa" />
             <span>{template.top_banner_title}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "0.70rem", color: "#bfdbfe", fontWeight: 600 }}>
-            <Lock size={12} color="#93c5fd" />
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: "0.72rem",
+            color: "#bfdbfe",
+            fontWeight: 600,
+            background: "rgba(30,58,138,0.35)",
+            padding: "4px 10px",
+            borderRadius: 6,
+            border: "1px solid rgba(96,165,250,0.2)",
+          }}>
+            <Lock size={13} color="#60a5fa" />
             <span>{template.top_banner_tag}</span>
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ flexShrink: 0, width: 58, height: 58, borderRadius: 4, background: "#ffffff", padding: 3, border: "1.5px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {/* Main header content */}
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <div style={{
+            flexShrink: 0,
+            width: 72,
+            height: 72,
+            borderRadius: 8,
+            background: "#ffffff",
+            padding: 4,
+            border: "2px solid rgba(96,165,250,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+          }}>
             <img
               src={logo}
               alt="Hospital Logo"
-              style={{ width: "100%", height: "100%", borderRadius: 2, objectFit: "cover", display: "block" }}
+              style={{ width: "100%", height: "100%", borderRadius: 4, objectFit: "cover", display: "block" }}
               onError={(e) => { e.currentTarget.style.display = "none"; }}
             />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: "0.70rem", fontWeight: 800, letterSpacing: "0.08em", color: "#60a5fa", textTransform: "uppercase" }}>
-              OFFICIAL HOSPITAL PLACEMENT DOSSIER
+            <div style={{
+              fontSize: "0.72rem",
+              fontWeight: 800,
+              letterSpacing: "0.1em",
+              color: "#60a5fa",
+              textTransform: "uppercase",
+              marginBottom: 4,
+            }}>
+              Official Hospital Placement Dossier
             </div>
-            <h2 style={{ fontSize: "1.28rem", fontWeight: 800, color: "#ffffff", margin: "2px 0 3px", lineHeight: 1.25, letterSpacing: "-0.01em" }}>
+            <h2 style={{
+              fontSize: "1.38rem",
+              fontWeight: 800,
+              color: "#ffffff",
+              margin: "0 0 5px 0",
+              lineHeight: 1.2,
+              letterSpacing: "-0.015em",
+            }}>
               {template.template_header}
             </h2>
-            <div style={{ fontSize: "0.80rem", color: "#cbd5e1", lineHeight: 1.45, fontWeight: 500 }}>
+            <div style={{
+              fontSize: "0.84rem",
+              color: "#cbd5e1",
+              lineHeight: 1.5,
+              fontWeight: 500,
+            }}>
               {template.subtitle}
             </div>
           </div>
@@ -879,35 +957,71 @@ export default function HospitalRequirementForm() {
           </div>
         )}
 
-        <div className="msj-form-grid-2" style={{ alignItems: "flex-start" }}>
-          <div
-            className={`msj-floating-group ${!termsAccepted && formSubmitted ? "has-error" : ""}`}
-            style={{ display: "flex", alignItems: "flex-start", gap: 10 }}
+        <div
+          style={{
+            background: "#f8fafc",
+            border: `1.5px solid ${!termsAccepted && formSubmitted ? "#ef4444" : "#cbd5e1"}`,
+            borderRadius: 10,
+            padding: "1rem 1.15rem",
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+            transition: "border-color 0.2s ease",
+          }}
+        >
+          <input
+            type="checkbox"
+            id="hospital-terms-checkbox"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            required
+            style={{
+              marginTop: 3,
+              width: 20,
+              height: 20,
+              minWidth: 20,
+              minHeight: 20,
+              accentColor: "#0a1d37",
+              cursor: "pointer",
+            }}
+          />
+          <label
+            htmlFor="hospital-terms-checkbox"
+            style={{
+              fontSize: "0.85rem",
+              color: "#1e293b",
+              lineHeight: 1.6,
+              cursor: "pointer",
+              fontWeight: 500,
+            }}
           >
-            <input
-              type="checkbox"
-              id="hospital-terms-checkbox"
-              checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
-              required
-              style={{ marginTop: 4, width: 18, height: 18, accentColor: "#0a1d37", cursor: "pointer" }}
-            />
-            <label htmlFor="hospital-terms-checkbox" style={{ fontSize: "0.78rem", color: "#0f172a", lineHeight: 1.5, cursor: "pointer" }}>
-              I have read and agree to the
-              <strong> Terms &amp; Conditions </strong>
-              and
-              <strong> Privacy Policy </strong>
-              of MSJ Global Education.
-              <span className="msj-req-star"> *</span>
-            </label>
-          </div>
-          {!termsAccepted && formSubmitted && (
-            <div className="msj-field-error-msg">
-              <AlertCircle size={12} />
-              <span>You must agree to the Terms &amp; Conditions to submit.</span>
-            </div>
-          )}
+            <strong style={{ color: "#0a1d37" }}>
+              I hereby confirm that I have read, understood, and voluntarily agree to the
+              Terms & Conditions, Privacy Policy, and Refund Policy of MSJ Global Education.
+            </strong>{" "}
+            I acknowledge that the information provided in this application is true and accurate to the best of my knowledge.
+            I understand that submission of false or misleading information may result in immediate rejection of my application
+            without refund, and may be subject to legal action under applicable Indian laws.
+            I authorize MSJ Global Education and its partner institutions to process my personal and academic data for admission,
+            verification, and placement purposes in accordance with their data protection policies.
+            <span className="msj-req-star" style={{ fontSize: "0.9rem" }}> *</span>
+          </label>
         </div>
+        {!termsAccepted && formSubmitted && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            color: "#dc2626",
+            fontSize: "0.82rem",
+            fontWeight: 600,
+            marginTop: 6,
+            padding: "0 0.25rem",
+          }}>
+            <AlertCircle size={14} />
+            <span>You must agree to the Terms & Conditions to submit this application.</span>
+          </div>
+        )}
 
         <button
           type="submit"

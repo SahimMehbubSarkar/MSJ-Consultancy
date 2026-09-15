@@ -724,23 +724,29 @@ export default function AdmissionRequirementForm() {
           <label
             htmlFor="admission-terms-checkbox"
             style={{
-              fontSize: "0.85rem",
-              color: "#1e293b",
-              lineHeight: 1.6,
+              fontSize: "0.86rem",
+              color: "#334155",
+              lineHeight: 1.65,
               cursor: "pointer",
-              fontWeight: 500,
+              fontWeight: 400,
             }}
           >
-            <strong style={{ color: "#0a1d37" }}>
-              I hereby confirm that I have read, understood, and voluntarily agree to the
-              Terms & Conditions, Privacy Policy, and Refund Policy of MSJ Global Education.
-            </strong>{" "}
-            I acknowledge that the information provided in this application is true and accurate to the best of my knowledge.
-            I understand that submission of false or misleading information may result in immediate rejection of my application
-            without refund, and may be subject to legal action under applicable Indian laws.
-            I authorize MSJ Global Education and its partner institutions to process my personal and academic data for admission,
-            verification, and placement purposes in accordance with their data protection policies.
-            <span className="msj-req-star" style={{ fontSize: "0.9rem" }}> *</span>
+            <strong style={{ color: "#0a1d37", display: "block", marginBottom: 6, fontSize: "0.92rem" }}>
+              Declaration of Consent & Agreement
+            </strong>
+            <span style={{ display: "block", marginBottom: 8 }}>
+              I confirm that all information provided in this application is true, complete, and accurate to the best of my knowledge. I understand that any false, misleading, or incomplete information may lead to immediate rejection of my application without refund, and may invite legal action under the laws of India.
+            </span>
+            <span style={{ display: "block", marginBottom: 8 }}>
+              I have read and voluntarily agree to the{" "}
+              <strong style={{ color: "#1e3a8a" }}>Terms & Conditions</strong>,{" "}
+              <strong style={{ color: "#1e3a8a" }}>Privacy Policy</strong>, and{" "}
+              <strong style={{ color: "#1e3a8a" }}>Refund Policy</strong> of MSJ Global Education. I authorize MSJ Global Education and its affiliated partner institutions to collect, store, and process my personal and academic data solely for admission, verification, and academic placement purposes, in compliance with applicable data protection regulations.
+            </span>
+            <span style={{ display: "block", fontSize: "0.8rem", color: "#64748b", fontStyle: "italic" }}>
+              By checking this box, I acknowledge that my submission constitutes a legally binding digital declaration of my consent.
+            </span>
+            <span className="msj-req-star" style={{ fontSize: "0.9rem", color: "#dc2626" }}> *</span>
           </label>
         </div>
         {!termsAccepted && formSubmitted && (

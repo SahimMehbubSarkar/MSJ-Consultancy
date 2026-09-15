@@ -1,69 +1,64 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { query } from "@/lib/db";
+import HomeClient from "./HomeClient";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const settings = await getSiteSettings();
+  const title = settings?.siteName
+    ? `${settings.siteName} | Global Education & Healthcare`
+    : "MSJ Global Education Consultancy & Overseas Healthcare";
+
+  return {
+    title,
+    description:
+      settings?.siteTagline ||
+      "Official portal for international university admissions, scholarship counseling, and overseas super-speciality hospital consultations.",
+    icons: {
+      icon: [
+        { url: "/api/site-settings/favicon", type: "image/png" },
+        { url: "/favicon.ico" },
+      ],
+      shortcut: "/api/site-settings/favicon",
+      apple: "/api/site-settings/favicon",
+    },
+  };
+}
+
+async function getSiteSettings() {
+  try {
+    const res = await query(
+      `SELECT site_name, site_tagline, contact_email, contact_phone, address, timezone, site_icon_url, favicon_url 
+       FROM site_settings WHERE id = 1 LIMIT 1`
+    );
+    if (res && res.rows && res.rows.length > 0) {
+      const row = res.rows[0];
+      return {
+        siteName: row.site_name,
+        siteTagline: row.site_tagline,
+        contactEmail: row.contact_email,
+        contactPhone: row.contact_phone,
+        address: row.address,
+        timezone: row.timezone,
+        siteIconUrl: row.site_icon_url,
+        faviconUrl: row.favicon_url,
+      };
+    }
+  } catch (err) {
+    console.warn("Could not pre-fetch site settings on server, using defaults:", err instanceof Error ? err.message : String(err));
+  }
+  return {
+    siteName: "MSJ Global Education Consultancy",
+    siteTagline: "Your Gateway to Global Education & World-Class Healthcare",
+    contactEmail: "msjglobaleducationconsultancy@gmail.com",
+    contactPhone: "+91 9635953116",
+    address: "Kolkata, West Bengal, India",
+    timezone: "Asia/Kolkata",
+  };
+}
+
+export default async function HomePage() {
+  const initialSettings = await getSiteSettings();
+
+  return <HomeClient initialSettings={initialSettings} />;
 }

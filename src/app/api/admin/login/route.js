@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { query } from '@/lib/db';
-import { signToken, TOKEN_EXPIRY_SECONDS } from '@/lib/jwt';
+import { createSession, SESSION_MAX_AGE_SECONDS } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,6 +89,7 @@ export async function POST(request) {
 
     // 6. Success: Reset failed attempts, update last login metadata
     const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || '127.0.0.1';
+    const userAgent = request.headers.get('user-agent') || 'Unknown';
 
     await query(
       `UPDATE admin
@@ -100,7 +101,10 @@ export async function POST(request) {
       [clientIp, admin.id]
     );
 
-    // 7. Return successful login response
+    // 7. Create dynamic revocable database session
+    const { token } = await createSession(admin.id, clientIp, userAgent);
+
+    // 8. Return successful login response
     const response = NextResponse.json(
       {
         success: true,
@@ -116,21 +120,13 @@ export async function POST(request) {
       { status: 200, headers }
     );
 
-    // Generate dynamic JWT token
-    const token = await signToken({
-      id: String(admin.id),
-      name: admin.name,
-      email: admin.email,
-      role: admin.role,
-    });
-
-    // Set secure HTTP-only session cookie with JWT
+    // Set secure HTTP-only session cookie
     response.cookies.set('msj_admin_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: TOKEN_EXPIRY_SECONDS, // 3 days
+      maxAge: SESSION_MAX_AGE_SECONDS, // 48 hours
     });
 
     return response;

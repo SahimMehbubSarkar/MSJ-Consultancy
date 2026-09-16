@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import { verifyToken } from "@/lib/jwt";
+import { validateSession } from "@/lib/session";
 import { query } from "@/lib/db";
 import DashboardLayout from "./DashboardLayout";
 
@@ -15,7 +15,8 @@ export default async function DashboardLayoutWrapper({ children }: { children: R
     redirect("/admin/login");
   }
 
-  const payload = await verifyToken(tokenCookie.value);
+  // Database-backed session verification (checks active status, expiration, and revocation)
+  const payload = await validateSession(tokenCookie.value);
 
   if (!payload) {
     redirect("/admin/login?expired=true");

@@ -261,7 +261,7 @@ export default function AdminLogin() {
           credentials: "same-origin",
         });
         if (res.ok) {
-          router.replace("/admin/dashboard");
+          window.location.href = "/admin/dashboard";
         }
       } catch {
         // Not logged in, stay on login page
@@ -305,8 +305,8 @@ export default function AdminLogin() {
       if (data && data.success) {
         showToast("success", data.message);
         setTimeout(() => {
-          router.push("/admin/dashboard");
-        }, 1200);
+          window.location.href = "/admin/dashboard";
+        }, 800);
       } else {
         showToast("error", data?.message || "Login failed. Please check credentials.");
       }

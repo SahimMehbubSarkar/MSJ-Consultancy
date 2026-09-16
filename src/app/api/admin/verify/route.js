@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { verifyToken } from '@/lib/jwt';
+import { validateSession } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,11 +15,11 @@ export async function GET() {
     );
   }
 
-  const payload = await verifyToken(tokenCookie.value);
+  const payload = await validateSession(tokenCookie.value);
 
   if (!payload) {
     const response = NextResponse.json(
-      { success: false, message: 'Session expired' },
+      { success: false, message: 'Session expired or revoked' },
       { status: 401, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' } }
     );
     response.cookies.set('msj_admin_token', '', {
@@ -33,7 +33,15 @@ export async function GET() {
   }
 
   return NextResponse.json(
-    { success: true, admin: { name: payload.name, email: payload.email } },
+    {
+      success: true,
+      admin: {
+        id: payload.sub,
+        name: payload.name,
+        email: payload.email,
+        role: payload.role,
+      },
+    },
     { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' } }
   );
 }

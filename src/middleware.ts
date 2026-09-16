@@ -1,54 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken, refreshToken, shouldRefresh } from "@/lib/jwt";
 
 /**
- * MSJ Admin Middleware
+ * MSJ Admin Middleware (Edge Runtime Compatible)
  *
- * - Protects all /admin/* routes (redirect to login if no valid JWT)
- * - Blocks /admin/login when already authenticated (redirect to dashboard)
- * - Redirects legacy /admin/dashboard/<subpage> to clean /admin/<subpage>
- * - Redirects /admin to /admin/dashboard
- * - Auto-refreshes JWT if less than 1 day remains before expiry
+ * Lightweight security gate:
+ * - Ensures presence of session cookie before accessing protected /admin/* routes
+ * - Directs unauthenticated traffic to /admin/login
+ * - Redirects legacy /admin paths to canonical locations
+ * - Pure edge-compatible (no Node.js crypto/pg required, zero clock-skew failure)
+ * - Deep validation (DB session verification, expiration, revocation) happens in Server Components (layout.tsx)
  */
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("msj_admin_token")?.value;
 
-  // --- Block login page when already authenticated ---
+  // --- 1. Allow login page freely ---
   if (pathname === "/admin/login") {
-    if (token) {
-      const payload = await verifyToken(token);
-      if (payload) {
-        const loginUrl = request.nextUrl.clone();
-        loginUrl.pathname = "/admin/dashboard";
-        loginUrl.searchParams.set("already_logged_in", "true");
-
-        const response = NextResponse.redirect(loginUrl);
-        response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
-
-        // Refresh token if needed
-        if (shouldRefresh(payload)) {
-          const newToken = await refreshToken(payload);
-          response.cookies.set("msj_admin_token", newToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            path: "/",
-            maxAge: 60 * 60 * 24 * 3,
-          });
-        }
-
-        return response;
-      }
-    }
-    const loginPassResponse = NextResponse.next();
-    loginPassResponse.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
-    return loginPassResponse;
+    const response = NextResponse.next();
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    return response;
   }
 
-  // --- Protect all other /admin routes ---
+  // --- 2. Protect all other /admin routes ---
   if (pathname.startsWith("/admin")) {
+    // If no session token cookie is found, immediately redirect to login
     if (!token) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/admin/login";
@@ -58,33 +34,14 @@ export async function middleware(request: NextRequest) {
       return redirectResponse;
     }
 
-    const payload = await verifyToken(token);
-
-    if (!payload) {
-      // Token invalid or expired
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/admin/login";
-      loginUrl.searchParams.set("expired", "true");
-      const response = NextResponse.redirect(loginUrl);
-      response.cookies.set("msj_admin_token", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 0,
-      });
-      response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
-      return response;
-    }
-
-    // Redirect /admin to /admin/dashboard
+    // Canonical redirect: /admin -> /admin/dashboard
     if (pathname === "/admin") {
       const dashUrl = request.nextUrl.clone();
       dashUrl.pathname = "/admin/dashboard";
       return NextResponse.redirect(dashUrl);
     }
 
-    // Redirect legacy /admin/dashboard/<subpage> to clean /admin/<subpage>
+    // Canonical redirect: /admin/dashboard/<subpage> -> /admin/<subpage>
     if (pathname.startsWith("/admin/dashboard/")) {
       const sub = pathname.slice("/admin/dashboard/".length);
       const cleanUrl = request.nextUrl.clone();
@@ -92,24 +49,11 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(cleanUrl);
     }
 
-    // Token is valid — refresh if less than 1 day remains
-    if (shouldRefresh(payload)) {
-      const newToken = await refreshToken(payload);
-      const response = NextResponse.next();
-      response.cookies.set("msj_admin_token", newToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 3,
-      });
-      response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
-      return response;
-    }
-
-    const passResponse = NextResponse.next();
-    passResponse.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
-    return passResponse;
+    // Session cookie present: allow request to proceed to Server Component (layout.tsx)
+    // where database-backed session validity, revocation, and sliding expiry are verified.
+    const response = NextResponse.next();
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    return response;
   }
 
   return NextResponse.next();

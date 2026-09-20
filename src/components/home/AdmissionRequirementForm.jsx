@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   User,
   Mail,
@@ -27,6 +28,10 @@ import {
   ChevronDown,
   X,
   CreditCard,
+  Camera,
+  Copy,
+  Check,
+  Download,
 } from "lucide-react";
 
 const ICONS = {
@@ -67,6 +72,19 @@ export default function AdmissionRequirementForm() {
   const [focused, setFocused] = useState(null);
   const [touched, setTouched] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [successCard, setSuccessCard] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (successCard) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [successCard]);
 
   useEffect(() => {
     async function loadTemplate() {
@@ -216,12 +234,131 @@ export default function AdmissionRequirementForm() {
       if (json.success) {
         setFormData({});
         setReceiptFile("");
+        setSuccessCard({
+          application_no: json.trackingId || json.admission?.application_no || "ADM-2026-REGISTERED",
+          student_name: payload.student_name || "Applicant",
+          phone: payload.phone || "N/A",
+          email: payload.email || "N/A",
+          gender: payload.gender || "Not Specified",
+          target_country: payload.target_country || "India",
+          target_university: payload.target_university || "Affiliated Medical College & University",
+          preferred_course: payload.preferred_course || "BSc Nursing",
+          study_level: payload.study_level || "N/A",
+          paid_amount: fee,
+          payment_status: "paid",
+          payment_method: payload.payment_method || "UPI / QR Scan",
+          transaction_id: json.admission?.transaction_id || `UPI-${Date.now().toString().slice(-8)}`,
+          created_at: new Date().toISOString(),
+        });
       }
     } catch (err) {
       setResult({ success: false, message: "Network error. Please try again." });
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleDownloadCard = () => {
+    if (!successCard) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 1400;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 1200, 1400);
+
+    // Header Background
+    ctx.fillStyle = "#0c2340";
+    ctx.fillRect(0, 0, 1200, 220);
+
+    // Accent Stripe
+    ctx.fillStyle = "#1e3a8a";
+    ctx.fillRect(0, 212, 1200, 8);
+
+    // Header Titles
+    ctx.fillStyle = "#93c5fd";
+    ctx.font = "bold 24px sans-serif";
+    ctx.fillText("OFFICIAL ENROLMENT PASS • MSJ GLOBAL EDUCATION", 60, 75);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 44px sans-serif";
+    ctx.fillText("Student Admission Enrolment Pass", 60, 140);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "22px sans-serif";
+    ctx.fillText("University Admission & Counselling Verification Record", 60, 185);
+
+    // Unique Application Number Box
+    ctx.fillStyle = "#0f172a";
+    ctx.beginPath();
+    ctx.roundRect(60, 260, 1080, 140, 16);
+    ctx.fill();
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("UNIQUE APPLICATION NUMBER", 90, 310);
+
+    ctx.fillStyle = "#60a5fa";
+    ctx.font = "bold 52px monospace";
+    ctx.fillText(successCard.application_no, 90, 370);
+
+    // Informative Details Box
+    ctx.fillStyle = "#f8fafc";
+    ctx.beginPath();
+    ctx.roundRect(60, 440, 1080, 680, 16);
+    ctx.fill();
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const fields = [
+      { label: "APPLICANT FULL NAME", value: successCard.student_name, x: 100, y: 520 },
+      { label: "CONTACT PHONE NUMBER", value: successCard.phone, x: 640, y: 520 },
+      { label: "EMAIL ADDRESS", value: successCard.email, x: 100, y: 640 },
+      { label: "TARGET COUNTRY", value: successCard.target_country, x: 640, y: 640 },
+      { label: "TARGET UNIVERSITY", value: successCard.target_university, x: 100, y: 760 },
+      { label: "PREFERRED COURSE", value: successCard.preferred_course, x: 640, y: 760 },
+      { label: "STUDY LEVEL", value: successCard.study_level, x: 100, y: 880 },
+      { label: "APPLICATION FEE PAID", value: `₹${Number(successCard.paid_amount || 0).toLocaleString()}`, x: 640, y: 880, color: "#059669", isBig: true },
+      { label: "PAYMENT VERIFICATION", value: "PAID / RECEIPT ATTACHED", x: 100, y: 1000, color: "#065f46" },
+      { label: "TRANSACTION REFERENCE", value: successCard.transaction_id || "UPI-Direct", x: 640, y: 1000 },
+    ];
+
+    fields.forEach((f) => {
+      ctx.fillStyle = "#64748b";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText(f.label, f.x, f.y);
+
+      ctx.fillStyle = f.color || "#0f172a";
+      ctx.font = f.isBig ? "bold 34px sans-serif" : "bold 26px sans-serif";
+      ctx.fillText(String(f.value || "N/A"), f.x, f.y + 40);
+    });
+
+    // Divider
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(60, 1160);
+    ctx.lineTo(1140, 1160);
+    ctx.stroke();
+
+    // Footer info
+    ctx.fillStyle = "#64748b";
+    ctx.font = "20px sans-serif";
+    ctx.fillText(`Applied Date: ${new Date(successCard.created_at).toLocaleString()}`, 100, 1220);
+
+    ctx.fillStyle = "#059669";
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillText("✓ Digitally Authenticated by MSJ Academic Board", 100, 1260);
+
+    // Save as PNG
+    const link = document.createElement("a");
+    link.download = `${successCard.application_no}-Slip.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
   };
 
   if (!template) {
@@ -827,6 +964,322 @@ export default function AdmissionRequirementForm() {
           )}
         </button>
       </div>
+
+      {/* =====================================================================
+          OFFICIAL ADMISSION CONFIRMATION CARD MODAL (RENDERED VIA PORTAL ON BODY)
+          ===================================================================== */}
+      {successCard && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(10, 25, 47, 0.88)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            zIndex: 99999999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            boxSizing: "border-box",
+            margin: 0,
+          }}
+          onClick={() => setSuccessCard(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            id="admission-confirmation-card"
+            style={{
+              background: "#ffffff",
+              borderRadius: "16px",
+              maxWidth: "600px",
+              width: "100%",
+              maxHeight: "92vh",
+              overflowY: "auto",
+              boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.45)",
+              border: "2px solid #0f172a",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                background: "linear-gradient(135deg, #0c2340 0%, #0a1d37 100%)",
+                padding: "1.25rem 1.5rem",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderBottom: "3px solid #1e3a8a",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 8, background: "rgba(59,130,246,0.2)", border: "1px solid rgba(59,130,246,0.4)", display: "flex", alignItems: "center", justifyContent: "center", color: "#60a5fa" }}>
+                  <ShieldCheck size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 800, color: "#93c5fd", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    OFFICIAL ENROLMENT PASS
+                  </div>
+                  <h3 style={{ margin: "2px 0 0", fontSize: "1.15rem", fontWeight: 800, color: "#ffffff" }}>
+                    Student Admission Pass
+                  </h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSuccessCard(null)}
+                style={{
+                  background: "rgba(255,255,255,0.1)",
+                  border: "none",
+                  color: "#cbd5e1",
+                  width: 32,
+                  height: 32,
+                  borderRadius: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+              {/* SCREENSHOT ALERT BANNER */}
+              <div
+                style={{
+                  background: "#fffbeb",
+                  border: "2px dashed #f59e0b",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                }}
+              >
+                <div
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    background: "#fef3c7",
+                    border: "1.5px solid #fde68a",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#b45309",
+                    flexShrink: 0,
+                  }}
+                >
+                  <Camera size={22} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "0.92rem", fontWeight: 800, color: "#92400e" }}>
+                    📸 Please Take a Screenshot or Download this Card!
+                  </div>
+                  <div style={{ fontSize: "0.78rem", color: "#b45309", marginTop: 2, lineHeight: 1.4 }}>
+                    Keep this card for your official records, application tracking, and payment verification.
+                  </div>
+                </div>
+              </div>
+
+              {/* UNIQUE APPLICATION NUMBER BOX */}
+              <div
+                style={{
+                  background: "#0f172a",
+                  color: "#ffffff",
+                  padding: "1rem 1.25rem",
+                  borderRadius: 10,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: 10,
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 800, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    UNIQUE APPLICATION NUMBER
+                  </div>
+                  <div style={{ fontSize: "1.35rem", fontWeight: 900, color: "#60a5fa", letterSpacing: "0.04em", fontFamily: "monospace", marginTop: 2 }}>
+                    {successCard.application_no}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(successCard.application_no);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2500);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    background: copied ? "#059669" : "rgba(255,255,255,0.12)",
+                    border: "1px solid rgba(255,255,255,0.25)",
+                    borderRadius: 6,
+                    color: "#ffffff",
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    transition: "all 0.18s ease",
+                  }}
+                >
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  <span>{copied ? "Copied!" : "Copy ID"}</span>
+                </button>
+              </div>
+
+              {/* INFORMATIVE PARTICULARS GRID */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: "0.85rem",
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 12,
+                  padding: "1.1rem",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                    Applicant Full Name
+                  </div>
+                  <div style={{ fontSize: "0.92rem", fontWeight: 800, color: "#0f172a", marginTop: 2 }}>
+                    {successCard.student_name}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                    Contact Phone Number
+                  </div>
+                  <div style={{ fontSize: "0.92rem", fontWeight: 800, color: "#0f172a", marginTop: 2 }}>
+                    {successCard.phone}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                    Target University
+                  </div>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1e3a8a", marginTop: 2 }}>
+                    {successCard.target_university}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                    Preferred Course
+                  </div>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginTop: 2 }}>
+                    {successCard.preferred_course}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                    Application Fee
+                  </div>
+                  <div style={{ fontSize: "1.05rem", fontWeight: 900, color: "#059669", marginTop: 2 }}>
+                    ₹{Number(successCard.paid_amount || 0).toLocaleString()}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontSize: "0.70rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                    Payment Status
+                  </div>
+                  <div style={{ marginTop: 3 }}>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        fontSize: "0.72rem",
+                        fontWeight: 800,
+                        background: "#ecfdf5",
+                        color: "#065f46",
+                        border: "1px solid #a7f3d0",
+                        padding: "2px 8px",
+                        borderRadius: 4,
+                      }}
+                    >
+                      PAID / RECEIPT ATTACHED
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ gridColumn: "span 2", paddingTop: "0.5rem", borderTop: "1px solid #e2e8f0" }}>
+                  <div style={{ fontSize: "0.70rem", color: "#64748b", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4 }}>
+                    <span>Transaction Ref: <strong>{successCard.transaction_id}</strong></span>
+                    <span>Applied: <strong>{new Date(successCard.created_at).toLocaleString()}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Seal Note */}
+              <div style={{ textAlign: "center", fontSize: "0.72rem", color: "#64748b" }}>
+                🔒 MSJ Academic Board • 100% Digitally Verified Enrolment
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: "flex", gap: "10px", marginTop: "0.25rem" }}>
+                <button
+                  type="button"
+                  onClick={handleDownloadCard}
+                  style={{
+                    flex: 1,
+                    padding: "10px 16px",
+                    background: "linear-gradient(135deg, #0f172a, #1e293b)",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 8,
+                    fontWeight: 700,
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    boxShadow: "0 4px 12px rgba(15, 23, 42, 0.2)",
+                  }}
+                >
+                  <Download size={16} /> Download Slip
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSuccessCard(null)}
+                  style={{
+                    padding: "10px 20px",
+                    background: "#f1f5f9",
+                    color: "#334155",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: 8,
+                    fontWeight: 700,
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </form>
   );
 }

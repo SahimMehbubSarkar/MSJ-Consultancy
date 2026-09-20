@@ -1,4 +1,7 @@
+import dns from 'dns';
 import { Pool } from 'pg';
+
+dns.setDefaultResultOrder('ipv4first');
 
 let pool;
 
@@ -9,7 +12,7 @@ export function getPool() {
         connectionString: process.env.DATABASE_URL,
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 15000,
+        connectionTimeoutMillis: 30000,
         query_timeout: 30000,
         ssl: { rejectUnauthorized: false },
       });
@@ -22,7 +25,7 @@ export function getPool() {
         database: process.env.DB_NAME || 'msj',
         max: 20,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000,
+        connectionTimeoutMillis: 30000,
         query_timeout: 30000,
         ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : false,
       });
